@@ -1473,7 +1473,7 @@ private void ChkInputActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRS
                         "select permintaan_ranap.no_rawat,reg_periksa.no_rkm_medis,pasien.nm_pasien,pasien.jk,reg_periksa.umurdaftar,reg_periksa.sttsumur,"
                         + "pasien.no_tlp,penjab.png_jawab,poliklinik.nm_poli,dokter.nm_dokter,"
                         + // Format tanggal ke format Indonesia: 19 November 2025
-                        "DATE_FORMAT(permintaan_ranap.tanggal,'%e %M %Y') as tanggal,"
+                        "permintaan_ranap.tanggal,"
                         + "permintaan_ranap.kd_kamar,kamar.kd_bangsal,"
                         + "bangsal.nm_bangsal,kamar.trf_kamar,permintaan_ranap.diagnosa,permintaan_ranap.catatan,reg_periksa.kd_dokter,"
                         + // Subquery untuk menggabungkan semua nama DPJP dengan statusnya
