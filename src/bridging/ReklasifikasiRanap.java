@@ -86,7 +86,7 @@ public final class ReklasifikasiRanap extends javax.swing.JDialog {
             "Trf Radioterapi","Trf Lab","Trf UTD","Trf Radiologi",
             "Trf Rehabilitasi","Trf Akomodasi","Trf Ruang Intensif",
             "Trf Obat","Trf Alkes","Trf BMHP","Trf Sewa Alat","Potongan",
-            "Tarif InaCBG","Untung/Rugi InaCBG"
+            "Tarif InaCBG","Untung/Rugi InaCBG","Kelas Hak","Kelas Naik","SEP BPJS"
             }){
               @Override public boolean isCellEditable(int rowIndex, int colIndex){return false;}
         };
@@ -95,7 +95,7 @@ public final class ReklasifikasiRanap extends javax.swing.JDialog {
         tbBangsal.setPreferredScrollableViewportSize(new Dimension(500,500));
         tbBangsal.setAutoResizeMode(JTable.AUTO_RESIZE_OFF);
 
-        for (int i = 0; i < 93; i++) {
+        for (int i = 0; i < 95; i++) {
             TableColumn column = tbBangsal.getColumnModel().getColumn(i);
             if(i==0){
                 column.setPreferredWidth(110);
@@ -132,6 +132,10 @@ public final class ReklasifikasiRanap extends javax.swing.JDialog {
                 column.setPreferredWidth(47);
             }else if(i==71){
                 column.setPreferredWidth(55);
+            }else if(i==72){
+                column.setPreferredWidth(55);
+            }else if(i==73){
+                column.setPreferredWidth(55);    
             }else{
                 column.setPreferredWidth(110);
             }
@@ -698,17 +702,21 @@ private void BtnCari1KeyPressed(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_
         Valid.tabelKosong(tabMode);
         try{      
             ps= koneksi.prepareStatement(
-                "select kamar_inap.no_rawat,reg_periksa.no_rkm_medis,pasien.nm_pasien,kamar_inap.tgl_keluar,penjab.png_jawab, "+
-                "kamar_inap.tgl_masuk,kamar_inap.jam_masuk,kamar_inap.tgl_keluar,kamar_inap.jam_keluar,"+
-                "kamar_inap.stts_pulang,kamar_inap.lama,pasien.jk,pasien.tgl_lahir,kamar.kelas "+
-                "from kamar_inap inner join reg_periksa "+
-                "inner join pasien inner join penjab inner join kamar inner join nota_inap "+
-                "on kamar_inap.no_rawat=reg_periksa.no_rawat and reg_periksa.kd_pj=penjab.kd_pj "+
-                "and reg_periksa.no_rkm_medis=pasien.no_rkm_medis "+
-                "and reg_periksa.no_rawat=nota_inap.no_rawat "+
-                "and kamar_inap.kd_kamar=kamar.kd_kamar "+
-                "where kamar_inap.tgl_keluar between ? and ? and reg_periksa.kd_pj like ? "+
-                "order by kamar_inap.tgl_keluar,kamar_inap.jam_keluar");
+                "SELECT kamar_inap.no_rawat, reg_periksa.no_rkm_medis, pasien.nm_pasien, kamar_inap.tgl_keluar, "
+              + "penjab.png_jawab, kamar_inap.tgl_masuk, kamar_inap.jam_masuk, kamar_inap.tgl_keluar, "
+              + "kamar_inap.jam_keluar, kamar_inap.stts_pulang, kamar_inap.lama, pasien.jk, pasien.tgl_lahir, "
+              + "kamar.kelas, COALESCE(bridging_sep.no_sep, '-') AS no_sep, bridging_sep.klsrawat, bridging_sep.klsnaik "
+              + "FROM kamar_inap "
+              + "INNER JOIN reg_periksa ON kamar_inap.no_rawat = reg_periksa.no_rawat "
+              + "INNER JOIN pasien ON reg_periksa.no_rkm_medis = pasien.no_rkm_medis "
+              + "INNER JOIN penjab ON reg_periksa.kd_pj = penjab.kd_pj "
+              + "INNER JOIN kamar ON kamar_inap.kd_kamar = kamar.kd_kamar "
+              + "INNER JOIN nota_inap ON reg_periksa.no_rawat = nota_inap.no_rawat "
+              + "LEFT JOIN bridging_sep ON bridging_sep.no_rawat = reg_periksa.no_rawat "
+              + "    AND bridging_sep.jnspelayanan = 1 "
+              + "WHERE kamar_inap.tgl_keluar BETWEEN ? AND ? "
+              + "AND reg_periksa.kd_pj LIKE ? "
+              + "ORDER BY kamar_inap.tgl_keluar, kamar_inap.jam_keluar");
             try {
                 ps.setString(1,Valid.SetTgl(Tgl1.getSelectedItem()+""));
                 ps.setString(2,Valid.SetTgl(Tgl2.getSelectedItem()+""));
@@ -1371,7 +1379,7 @@ private void BtnCari1KeyPressed(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_
                             Valid.SetAngka(Ranap_Dokter_Paramedis+Ralan_Dokter_Paramedis),Valid.SetAngka(Ranap_Paramedis+Ralan_Paramedis),
                             Valid.SetAngka(Tambahan+Registrasi+Service),0,Valid.SetAngka(Laborat),0,Valid.SetAngka(Radiologi),0,
                             Valid.SetAngka(Kamar+Harian),0,Valid.SetAngka(Obat+Retur_Obat+Resep_Pulang),0,0,0,Valid.SetAngka(Potongan),
-                            Valid.SetAngka(tarifincabg),Valid.SetAngka(untungrugiinacbg)
+                            Valid.SetAngka(tarifincabg),Valid.SetAngka(untungrugiinacbg),rs.getString("klsrawat"),rs.getString("klsnaik"),rs.getString("no_sep")
                         });                        
                     }}                
                 } 

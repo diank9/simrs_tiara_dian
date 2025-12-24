@@ -1165,26 +1165,31 @@ private void CmbCrIsiItemStateChanged(java.awt.event.ItemEvent evt) {//GEN-FIRST
     }
        
      public void isCek(){
-        BtnSimpan.setEnabled(akses.getkamar());
-        BtnHapus.setEnabled(akses.getkamar());
-        BtnPrint.setEnabled(akses.getkamar());
-        TKd.setEditable(akses.getkamar());
-        TTarif.setEditable(akses.getkamar());
-        kd_bangsal.setEditable(akses.getkamar());
-        Kelas.setEnabled(akses.getkamar());        
-        asalform=akses.getform();
-        if(akses.getkode().equals("Admin Utama")){
-            MnRestore.setEnabled(true);
-            BtnEdit.setEnabled(true);
-        }else{
-            if(akses.getkamar()==false){
-                if(ubah_status_kamar.equals("No")){
-                    BtnEdit.setEnabled(false);
-                }else{
-                    BtnEdit.setEnabled(true);
-                }
-            }   
-            MnRestore.setEnabled(false);
+    BtnSimpan.setEnabled(akses.getkamar());
+    BtnHapus.setEnabled(akses.getkamar());
+    BtnPrint.setEnabled(akses.getkamar());
+    TKd.setEditable(akses.getkamar());
+    TTarif.setEditable(akses.getkamar());
+    kd_bangsal.setEditable(akses.getkamar());
+    Kelas.setEnabled(akses.getkamar());        
+    asalform=akses.getform();
+
+    if(akses.getkode().equals("Admin Utama")){
+        MnRestore.setEnabled(true);
+        BtnEdit.setEnabled(true);
+    }else{
+        if(akses.getkamar()==false){
+            if(ubah_status_kamar.equals("No")){
+                BtnEdit.setEnabled(false);
+            }else{
+                BtnEdit.setEnabled(true);
+                BtnHapus.setEnabled(false);
+            }
+        }   
+
+        // 🔒 Tambahan WAJIB: Non-admin TIDAK BOLEH HAPUS
+        BtnHapus.setEnabled(false);
+        MnRestore.setEnabled(false);
         }
      }
 }

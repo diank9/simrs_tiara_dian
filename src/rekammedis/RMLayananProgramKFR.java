@@ -1335,6 +1335,7 @@ public final class RMLayananProgramKFR extends javax.swing.JDialog {
                 Sequel.queryu("delete from antrilayananprogramkfr");
                 Sequel.queryu("insert into antrilayananprogramkfr values('"+tbObat.getValueAt(tbObat.getSelectedRow(),0).toString()+"')");
                 Sequel.queryu("delete from bukti_layanan_program_kfr where no_rawat='"+tbObat.getValueAt(tbObat.getSelectedRow(),0).toString()+"'");
+                Valid.panggilUrl("index.php?act=login&usere="+koneksiDB.USERHYBRIDWEB()+"&passwordte="+koneksiDB.PASHYBRIDWEB());
             }else{
                 JOptionPane.showMessageDialog(rootPane,"Silahkan anda pilih data terlebih dahulu..!!");
             }

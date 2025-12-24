@@ -799,6 +799,7 @@ public final class DlgKasirRalan extends javax.swing.JDialog {
         MnRekapHarianPoli = new javax.swing.JMenuItem();
         MnRekapHarianObat = new javax.swing.JMenuItem();
         jMenu6 = new javax.swing.JMenu();
+        MnLabelObat = new javax.swing.JMenuItem();
         MnLabelTracker = new javax.swing.JMenuItem();
         MnLabelTracker1 = new javax.swing.JMenuItem();
         MnLabelTracker2 = new javax.swing.JMenuItem();
@@ -3085,6 +3086,22 @@ public final class DlgKasirRalan extends javax.swing.JDialog {
         jMenu6.setName("jMenu6"); // NOI18N
         jMenu6.setPreferredSize(new java.awt.Dimension(200, 26));
 
+        MnLabelObat.setBackground(new java.awt.Color(255, 255, 254));
+        MnLabelObat.setFont(new java.awt.Font("Tahoma", 0, 11)); // NOI18N
+        MnLabelObat.setForeground(new java.awt.Color(50, 50, 50));
+        MnLabelObat.setIcon(new javax.swing.ImageIcon(getClass().getResource("/picture/category.png"))); // NOI18N
+        MnLabelObat.setText("Label Pengantaran Obat");
+        MnLabelObat.setHorizontalAlignment(javax.swing.SwingConstants.LEFT);
+        MnLabelObat.setHorizontalTextPosition(javax.swing.SwingConstants.RIGHT);
+        MnLabelObat.setName("MnLabelObat"); // NOI18N
+        MnLabelObat.setPreferredSize(new java.awt.Dimension(180, 26));
+        MnLabelObat.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                MnLabelObatActionPerformed(evt);
+            }
+        });
+        jMenu6.add(MnLabelObat);
+        
         MnLabelTracker.setBackground(new java.awt.Color(255, 255, 254));
         MnLabelTracker.setFont(new java.awt.Font("Tahoma", 0, 11)); // NOI18N
         MnLabelTracker.setForeground(new java.awt.Color(50, 50, 50));
@@ -8314,17 +8331,26 @@ private void MnDataPemberianObatActionPerformed(java.awt.event.ActionEvent evt) 
 
     private void MnBatalActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_MnBatalActionPerformed
         if(TNoRw.getText().trim().equals("")){
-            Valid.textKosong(TNoRw,"No.Rawat");
-        }else{
-            if(Sequel.cariInteger("select count(kamar_inap.no_rawat) from kamar_inap where kamar_inap.no_rawat=?",TNoRw.getText())>0){
-                JOptionPane.showMessageDialog(null,"Maaf, Pasien sudah masuk Kamar Inap. Gunakan billing Ranap..!!!");
-            }else {
-                Valid.editTable(tabModekasir,"reg_periksa","no_rawat",TNoRw,"stts='Batal',biaya_reg='0'");
-                if(tbKasirRalan.getSelectedRow()>-1){
-                    tabModekasir.setValueAt("Batal",tbKasirRalan.getSelectedRow(),10);
-                }
+        Valid.textKosong(TNoRw,"No.Rawat");
+    }else{
+        // Cek apakah pasien sudah masuk kamar inap
+        if(Sequel.cariInteger("select count(kamar_inap.no_rawat) from kamar_inap where kamar_inap.no_rawat=?", 
+                TNoRw.getText()) > 0){
+            JOptionPane.showMessageDialog(null,"Maaf, Pasien sudah masuk Kamar Inap. Gunakan billing Ranap..!!!");
+        }
+        // Cek apakah sudah ada pemeriksaan ralan
+        else if(Sequel.cariInteger("select count(pemeriksaan_ralan.no_rawat) from pemeriksaan_ralan where pemeriksaan_ralan.no_rawat=?", 
+                TNoRw.getText()) > 0){
+            JOptionPane.showMessageDialog(null,"Maaf, Pasien sudah diperiksa. Tidak bisa dibatalkan..!!!");
+        }
+        else {
+            // Jika lolos semua validasi → boleh dibatalkan
+            Valid.editTable(tabModekasir,"reg_periksa","no_rawat",TNoRw,"stts='Batal',biaya_reg='0'");
+            if(tbKasirRalan.getSelectedRow()>-1){
+                tabModekasir.setValueAt("Batal",tbKasirRalan.getSelectedRow(),10);
             }
         }
+    }
     }//GEN-LAST:event_MnBatalActionPerformed
 
     private void MnOperasiActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_MnOperasiActionPerformed
@@ -9980,6 +10006,26 @@ private void MnDataPemberianObatActionPerformed(java.awt.event.ActionEvent evt) 
             this.setCursor(Cursor.getDefaultCursor());
         }
     }//GEN-LAST:event_MnLabelTrackerActionPerformed
+    
+    private void MnLabelObatActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_MnLabelObatActionPerformed
+        if(TPasienCari.getText().trim().equals("")){
+            JOptionPane.showMessageDialog(null,"Maaf, Silahkan anda pilih dulu pasien...!!!");
+        }else{
+            this.setCursor(Cursor.getPredefinedCursor(Cursor.WAIT_CURSOR));
+            Map<String, Object> param = new HashMap<>();
+            param.put("namars",akses.getnamars());
+            param.put("alamatrs",akses.getalamatrs());
+            param.put("kotars",akses.getkabupatenrs());
+            param.put("propinsirs",akses.getpropinsirs());
+            param.put("kontakrs",akses.getkontakrs());
+            param.put("emailrs",akses.getemailrs());
+            param.put("no_rawat",TNoRw.getText());
+            param.put("logo",Sequel.cariGambar("select setting.logo from setting"));
+            param.put("alamat",Sequel.cariIsi("SELECT CONCAT(COALESCE(pasien.alamat,''),', ',COALESCE(kelurahan.nm_kel,''),', ',COALESCE(kecamatan.nm_kec,''),', ',COALESCE(kabupaten.nm_kab,'')) FROM pasien LEFT JOIN kelurahan ON pasien.kd_kel=kelurahan.kd_kel LEFT JOIN kecamatan ON pasien.kd_kec=kecamatan.kd_kec LEFT JOIN kabupaten ON pasien.kd_kab=kabupaten.kd_kab WHERE pasien.no_rkm_medis=?",TNoRMCari.getText()));
+            Valid.MyReport("rptLabelObat.jasper",param,"::[ Label Obat Pengantaran Obat ]::");
+            this.setCursor(Cursor.getDefaultCursor());
+        }
+    }//GEN-LAST:event_MnLabelObatActionPerformed
 
     private void MnLabelTracker1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_MnLabelTracker1ActionPerformed
         if(TPasienCari.getText().trim().equals("")){
@@ -15351,6 +15397,7 @@ private void MnDataPemberianObatActionPerformed(java.awt.event.ActionEvent evt) 
     private javax.swing.JMenuItem MnKamarInap;
     private javax.swing.JMenuItem MnKamarInap1;
     private javax.swing.JMenuItem MnKonselingFarmasi;
+    private javax.swing.JMenuItem MnLabelObat;
     private javax.swing.JMenuItem MnLabelTracker;
     private javax.swing.JMenuItem MnLabelTracker1;
     private javax.swing.JMenuItem MnLabelTracker2;

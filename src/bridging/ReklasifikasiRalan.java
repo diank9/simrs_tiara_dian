@@ -83,7 +83,7 @@ public final class ReklasifikasiRalan extends javax.swing.JDialog {
             "Trf Radioterapi","Trf Lab","Trf UTD","Trf Radiologi",
             "Trf Rehabilitasi","Trf Akomodasi","Trf Ruang Intensif",
             "Trf Obat","Trf Alkes","Trf BMHP","Trf Sewa Alat","Potongan",
-            "Tarif InaCBG","Untung/Rugi InaCBG"
+            "Tarif InaCBG","Untung/Rugi InaCBG","SEP BPJS"
             }){
               @Override public boolean isCellEditable(int rowIndex, int colIndex){return false;}
         };
@@ -92,7 +92,7 @@ public final class ReklasifikasiRalan extends javax.swing.JDialog {
         tbBangsal.setPreferredScrollableViewportSize(new Dimension(500,500));
         tbBangsal.setAutoResizeMode(JTable.AUTO_RESIZE_OFF);
 
-        for (int i = 0; i < 93; i++) {
+        for (int i = 0; i < 94; i++) {
             TableColumn column = tbBangsal.getColumnModel().getColumn(i);
             if(i==0){
                 column.setPreferredWidth(110);
@@ -128,6 +128,8 @@ public final class ReklasifikasiRalan extends javax.swing.JDialog {
                     (i==64)||(i==65)||(i==67)||(i==68)||(i==69)||(i==70)){
                 column.setPreferredWidth(47);
             }else if(i==71){
+                column.setPreferredWidth(55);
+            }else if(i==72){
                 column.setPreferredWidth(55);
             }else{
                 column.setPreferredWidth(110);
@@ -699,11 +701,19 @@ private void BtnCari1KeyPressed(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_
         Valid.tabelKosong(tabMode);
         try{     
             ps= koneksi.prepareStatement(
-                        "select reg_periksa.no_rawat,reg_periksa.no_rkm_medis,reg_periksa.tgl_registrasi,reg_periksa.jam_reg,penjab.png_jawab, "+
-                        "nota_jalan.tanggal,nota_jalan.jam,pasien.jk,pasien.tgl_lahir from reg_periksa inner join penjab inner join nota_jalan inner join pasien "+
-                        "on reg_periksa.kd_pj=penjab.kd_pj and reg_periksa.no_rawat=nota_jalan.no_rawat and reg_periksa.no_rkm_medis=pasien.no_rkm_medis "+
-                        "where reg_periksa.status_lanjut='Ralan' and "+
-                        "reg_periksa.tgl_registrasi between ? and ? and reg_periksa.kd_pj like ? order by reg_periksa.kd_dokter,reg_periksa.tgl_registrasi");
+                "SELECT reg_periksa.no_rawat, reg_periksa.no_rkm_medis, reg_periksa.tgl_registrasi, reg_periksa.jam_reg, " +
+                "penjab.png_jawab, nota_jalan.tanggal, nota_jalan.jam, pasien.jk, pasien.tgl_lahir, " +
+                "COALESCE(bridging_sep.no_sep, '-') AS no_sep " +
+                "FROM reg_periksa " +
+                "INNER JOIN penjab ON reg_periksa.kd_pj = penjab.kd_pj " +
+                "INNER JOIN nota_jalan ON reg_periksa.no_rawat = nota_jalan.no_rawat " +
+                "INNER JOIN pasien ON reg_periksa.no_rkm_medis = pasien.no_rkm_medis " +
+                "LEFT JOIN bridging_sep ON bridging_sep.no_rawat = reg_periksa.no_rawat " +
+                "    AND bridging_sep.jnspelayanan = 2 " +
+                "WHERE reg_periksa.status_lanjut = 'Ralan' " +
+                "AND reg_periksa.tgl_registrasi BETWEEN ? AND ? " +
+                "AND reg_periksa.kd_pj LIKE ? " +
+                "ORDER BY reg_periksa.kd_dokter, reg_periksa.tgl_registrasi");
             try {
                 ps.setString(1,Valid.SetTgl(Tgl1.getSelectedItem()+""));
                 ps.setString(2,Valid.SetTgl(Tgl2.getSelectedItem()+""));
@@ -1045,7 +1055,7 @@ private void BtnCari1KeyPressed(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_
                         Valid.SetAngka(Operasi+Laborat+Radiologi+Obat+Ralan_Dokter+Ralan_Dokter_paramedis+Ralan_Paramedis+Tambahan+Potongan+Registrasi),
                         Valid.SetAngka(kebidanan),Valid.SetAngka(operasi2),Valid.SetAngka(Ralan_Dokter+Ralan_Dokter_paramedis),
                         0,Valid.SetAngka(Ralan_Paramedis),Valid.SetAngka(Tambahan+Registrasi),0,Valid.SetAngka(Laborat),
-                        0,Valid.SetAngka(Radiologi),0,0,0,Valid.SetAngka(Obat),0,0,0,Valid.SetAngka(Potongan),Valid.SetAngka(tarifincabg),Valid.SetAngka(untungrugiinacbg)
+                        0,Valid.SetAngka(Radiologi),0,0,0,Valid.SetAngka(Obat),0,0,0,Valid.SetAngka(Potongan),Valid.SetAngka(tarifincabg),Valid.SetAngka(untungrugiinacbg),rs.getString("no_sep")
                     }); 
                 }                
             } catch (Exception e) {

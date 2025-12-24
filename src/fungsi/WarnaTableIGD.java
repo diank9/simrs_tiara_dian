@@ -14,16 +14,23 @@ import javax.swing.table.DefaultTableCellRenderer;
  *
  * @author Owner
  */
-public class WarnaTable extends DefaultTableCellRenderer {
+public class WarnaTableIGD extends DefaultTableCellRenderer {
     @Override
-    public Component getTableCellRendererComponent(JTable table, Object value, boolean isSelected, boolean hasFocus, int row, int column){
-        Component component = super.getTableCellRendererComponent(table, value, isSelected, hasFocus, row, column);
-        if (row % 2 == 1){
-            component.setBackground(new Color(255,244,244));
-        }else{
-            component.setBackground(new Color(255,255,255));
-        } 
-        return component;
+    public Component getTableCellRendererComponent(JTable table, Object value, boolean isSelected, boolean hasFocus, int row, int column) {
+    Component component = super.getTableCellRendererComponent(table, value, isSelected, hasFocus, row, column);
+
+    // Jika nilai cell langsung "Ada"
+    if (value != null && value.toString().equalsIgnoreCase("Ada")) {
+        component.setBackground(new Color(204, 232, 255)); // biru muda
+    } else {
+        // Warna zebra stripe default
+        if (row % 2 == 1) {
+            component.setBackground(new Color(255, 244, 244));
+        } else {
+            component.setBackground(new Color(255, 255, 255));
+        }
     }
 
+    return component;
+}
 }

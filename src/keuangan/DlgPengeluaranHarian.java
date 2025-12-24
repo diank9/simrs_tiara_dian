@@ -271,6 +271,8 @@ public final class DlgPengeluaranHarian extends javax.swing.JDialog {
         KodeTransaksi = new widget.TextBox();
         jLabel100 = new widget.Label();
         jLabel101 = new widget.Label();
+        Popup = new javax.swing.JPopupMenu();
+        cetakkwitansi = new javax.swing.JMenuItem();
         internalFrame1 = new widget.InternalFrame();
         Scroll = new widget.ScrollPane();
         tbResep = new widget.Table();
@@ -463,6 +465,22 @@ public final class DlgPengeluaranHarian extends javax.swing.JDialog {
 
         DlgBayarMandiri.getContentPane().add(internalFrame4, java.awt.BorderLayout.CENTER);
 
+        Popup.setName("Popup"); // NOI18N
+
+        cetakkwitansi.setBackground(new java.awt.Color(255, 255, 254));
+        cetakkwitansi.setFont(new java.awt.Font("Tahoma", 0, 11)); // NOI18N
+        cetakkwitansi.setForeground(java.awt.Color.darkGray);
+        cetakkwitansi.setIcon(new javax.swing.ImageIcon(getClass().getResource("/picture/category.png"))); // NOI18N
+        cetakkwitansi.setText("Cetak Bukti Pengeluaran");
+        cetakkwitansi.setName("cetakkwitansi"); // NOI18N
+        cetakkwitansi.setPreferredSize(new java.awt.Dimension(250, 25));
+        cetakkwitansi.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                cetakkwitansiActionPerformed(evt);
+            }
+        });
+        Popup.add(cetakkwitansi);
+
         setDefaultCloseOperation(javax.swing.WindowConstants.DISPOSE_ON_CLOSE);
         setUndecorated(true);
         setResizable(false);
@@ -631,7 +649,7 @@ public final class DlgPengeluaranHarian extends javax.swing.JDialog {
         panelGlass9.add(jLabel19);
 
         DTPCari1.setForeground(new java.awt.Color(50, 70, 50));
-        DTPCari1.setModel(new javax.swing.DefaultComboBoxModel(new String[] { "08-06-2024" }));
+        DTPCari1.setModel(new javax.swing.DefaultComboBoxModel(new String[] { "17-12-2025" }));
         DTPCari1.setDisplayFormat("dd-MM-yyyy");
         DTPCari1.setName("DTPCari1"); // NOI18N
         DTPCari1.setOpaque(false);
@@ -645,7 +663,7 @@ public final class DlgPengeluaranHarian extends javax.swing.JDialog {
         panelGlass9.add(jLabel21);
 
         DTPCari2.setForeground(new java.awt.Color(50, 70, 50));
-        DTPCari2.setModel(new javax.swing.DefaultComboBoxModel(new String[] { "08-06-2024" }));
+        DTPCari2.setModel(new javax.swing.DefaultComboBoxModel(new String[] { "17-12-2025" }));
         DTPCari2.setDisplayFormat("dd-MM-yyyy");
         DTPCari2.setName("DTPCari2"); // NOI18N
         DTPCari2.setOpaque(false);
@@ -789,7 +807,7 @@ public final class DlgPengeluaranHarian extends javax.swing.JDialog {
         btnKategori.setBounds(409, 12, 28, 23);
 
         Tanggal.setForeground(new java.awt.Color(50, 70, 50));
-        Tanggal.setModel(new javax.swing.DefaultComboBoxModel(new String[] { "08-06-2024 14:40:39" }));
+        Tanggal.setModel(new javax.swing.DefaultComboBoxModel(new String[] { "17-12-2025 10:42:30" }));
         Tanggal.setDisplayFormat("dd-MM-yyyy HH:mm:ss");
         Tanggal.setName("Tanggal"); // NOI18N
         Tanggal.setOpaque(false);
@@ -1355,6 +1373,23 @@ private void ChkInputActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRS
         Valid.pindah(evt,KotaAtasNamaRekening,BtnMetode);
     }//GEN-LAST:event_RekeningAtasNamaKeyPressed
 
+    private void cetakkwitansiActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_cetakkwitansiActionPerformed
+        this.setCursor(Cursor.getPredefinedCursor(Cursor.WAIT_CURSOR));
+        if(Keterangan.getText().trim().equals("")){
+            Valid.textKosong(Keterangan,"Keterangan");
+        }else if(KdPtg.getText().trim().equals("")||NmPtg.getText().trim().equals("")){
+            Valid.textKosong(KdPtg,"Petugas");
+        }else if(KdKategori.getText().trim().equals("")||NmKategori.getText().trim().equals("")){
+            Valid.textKosong(KdKategori,"Kode Kategori");
+        }else if(tabMode.getRowCount()==0){
+            JOptionPane.showMessageDialog(null,"Maaf, data sudah habis...!!!!");
+            tbResep.requestFocus();
+        }else {
+            Valid.panggilUrl("billing/LaporanKeuangan.php?kode="+Nomor.getText()+"&Tanggal="+Valid.SetTgl(Tanggal.getSelectedItem()+"")+"&nama="+NmKategori.getText().replaceAll(" ","_")+"&petugas="+NmPtg.getText().replaceAll(" ","_")+"&keterangan="+Keterangan.getText().replaceAll(" ","_")+"&nom="+Pengeluaran.getText().replaceAll(" ","_")+"&kategori="+NmKategori.getText().replaceAll(" ","_")+"&usere="+koneksiDB.USERHYBRIDWEB()+"&passwordte="+koneksiDB.PASHYBRIDWEB());
+        }
+        this.setCursor(Cursor.getDefaultCursor());
+    }//GEN-LAST:event_cetakkwitansiActionPerformed
+
     /**
     * @param args the command line arguments
     */
@@ -1404,12 +1439,14 @@ private void ChkInputActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRS
     private widget.TextBox Nomor;
     private javax.swing.JPanel PanelInput;
     private widget.TextBox Pengeluaran;
+    private javax.swing.JPopupMenu Popup;
     private widget.TextBox RekeningAtasNama;
     private widget.ScrollPane Scroll;
     private widget.TextBox TCari;
     private widget.Tanggal Tanggal;
     private widget.Button btnKategori;
     private widget.Button btnPetugas;
+    private javax.swing.JMenuItem cetakkwitansi;
     private widget.InternalFrame internalFrame1;
     private widget.InternalFrame internalFrame4;
     private widget.Label jLabel100;

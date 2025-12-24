@@ -576,7 +576,7 @@ private void btnCariKeyPressed(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_b
             );            
             i=1;
             ps=koneksi.prepareStatement("select reg_periksa.kd_poli,poliklinik.nm_poli from reg_periksa inner join poliklinik on reg_periksa.kd_poli=poliklinik.kd_poli "+
-                    "where reg_periksa.kd_poli<>'IGDK' and year(reg_periksa.tgl_registrasi)=? group by reg_periksa.kd_poli order by reg_periksa.kd_poli");
+                    "where reg_periksa.kd_poli<>'IGDK' and reg_periksa.stts<>'Batal' and year(reg_periksa.tgl_registrasi)=? group by reg_periksa.kd_poli order by reg_periksa.kd_poli");
             try {
                 ps.setString(1,ThnCari.getSelectedItem().toString());
                 rs=ps.executeQuery();
@@ -724,7 +724,7 @@ private void btnCariKeyPressed(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_b
             );            
             i=1;
             ps=koneksi.prepareStatement("select reg_periksa.kd_poli,poliklinik.nm_poli from reg_periksa inner join poliklinik on reg_periksa.kd_poli=poliklinik.kd_poli "+
-                    "where reg_periksa.kd_poli<>'IGDK' and year(reg_periksa.tgl_registrasi)=? group by reg_periksa.kd_poli order by reg_periksa.kd_poli");
+                    "where reg_periksa.kd_poli<>'IGDK' and reg_periksa.stts<>'Batal' and year(reg_periksa.tgl_registrasi)=? group by reg_periksa.kd_poli order by reg_periksa.kd_poli");
             try {
                 ps.setString(1,ThnCari.getSelectedItem().toString());
                 rs=ps.executeQuery();
@@ -793,7 +793,7 @@ private void btnCariKeyPressed(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_b
                     );
                     
                     ps2=koneksi.prepareStatement("select reg_periksa.kd_dokter,dokter.nm_dokter from reg_periksa inner join dokter on reg_periksa.kd_dokter=dokter.kd_dokter "+
-                        "where reg_periksa.kd_poli=? and year(reg_periksa.tgl_registrasi)=? group by reg_periksa.kd_dokter order by reg_periksa.kd_dokter");
+                        "where reg_periksa.kd_poli=? and reg_periksa.stts<>'Batal' and year(reg_periksa.tgl_registrasi)=? group by reg_periksa.kd_dokter order by reg_periksa.kd_dokter");
                     try {
                         ps2.setString(1,rs.getString("kd_poli"));
                         ps2.setString(2,ThnCari.getSelectedItem().toString());
@@ -944,7 +944,7 @@ private void btnCariKeyPressed(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_b
             );            
             i=1;
             ps=koneksi.prepareStatement("select reg_periksa.kd_poli,poliklinik.nm_poli from reg_periksa inner join poliklinik on reg_periksa.kd_poli=poliklinik.kd_poli "+
-                    "where reg_periksa.kd_poli<>'IGDK' and year(reg_periksa.tgl_registrasi)=? group by reg_periksa.kd_poli order by reg_periksa.kd_poli");
+                    "where reg_periksa.kd_poli<>'IGDK' and reg_periksa.stts<>'Batal' and year(reg_periksa.tgl_registrasi)=? group by reg_periksa.kd_poli order by reg_periksa.kd_poli");
             try {
                 ps.setString(1,ThnCari.getSelectedItem().toString());
                 rs=ps.executeQuery();
@@ -1244,7 +1244,7 @@ private void btnCariKeyPressed(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_b
             );            
             i=1;
             ps=koneksi.prepareStatement("select reg_periksa.kd_poli,poliklinik.nm_poli from reg_periksa inner join poliklinik on reg_periksa.kd_poli=poliklinik.kd_poli "+
-                    "where reg_periksa.kd_poli<>'IGDK' and year(reg_periksa.tgl_registrasi)=? group by reg_periksa.kd_poli order by reg_periksa.kd_poli");
+                    "where reg_periksa.kd_poli<>'IGDK' and reg_periksa.stts<>'Batal' and year(reg_periksa.tgl_registrasi)=? group by reg_periksa.kd_poli order by reg_periksa.kd_poli");
             try {
                 ps.setString(1,ThnCari.getSelectedItem().toString());
                 rs=ps.executeQuery();
@@ -1545,7 +1545,7 @@ private void btnCariKeyPressed(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_b
             );            
             i=1;
             ps=koneksi.prepareStatement("select reg_periksa.kd_pj,penjab.png_jawab from reg_periksa inner join penjab on reg_periksa.kd_pj=penjab.kd_pj "+
-                    "where reg_periksa.kd_poli<>'IGDK' and year(reg_periksa.tgl_registrasi)=? group by reg_periksa.kd_pj order by reg_periksa.kd_pj");
+                    "where reg_periksa.kd_poli<>'IGDK' and reg_periksa.stts<>'Batal' and year(reg_periksa.tgl_registrasi)=? group by reg_periksa.kd_pj order by reg_periksa.kd_pj");
             try {
                 ps.setString(1,ThnCari.getSelectedItem().toString());
                 rs=ps.executeQuery();

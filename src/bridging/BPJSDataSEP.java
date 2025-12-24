@@ -3624,7 +3624,7 @@ public final class BPJSDataSEP extends javax.swing.JDialog {
             }else{
                 cekViaBPJSKartu.tampil(no_peserta);
                 if(cekViaBPJSKartu.informasi.equals("OK")){
-                    if(cekViaBPJSKartu.statusPesertaketerangan.equals("AKTIF")){
+                    if(cekViaBPJSKartu.statusPesertaketerangan.startsWith("AKTIF")){
                         TPasien.setText(cekViaBPJSKartu.nama);
                         TglLahir.setText(cekViaBPJSKartu.tglLahir);
                         NIK.setText(cekViaBPJSKartu.nik);
@@ -7049,7 +7049,7 @@ public final class BPJSDataSEP extends javax.swing.JDialog {
                             jammulai=rs.getString("jam_mulai");
                             jamselesai=rs.getString("jam_selesai");
                             kuota=rs.getInt("kuota");
-                            datajam=Sequel.cariIsi("select DATE_ADD(concat('"+Valid.SetTgl(TanggalSEP.getSelectedItem()+"")+"',' ','"+jammulai+"'),INTERVAL "+(Integer.parseInt(nomorreg)*6)+" MINUTE) ");
+                            datajam=Sequel.cariIsi("select DATE_ADD(concat('"+Valid.SetTgl(TanggalSEP.getSelectedItem()+"")+"',' ','"+jammulai+"'),INTERVAL "+(Integer.parseInt(nomorreg)*5)+" MINUTE) ");
                             parsedDate = dateFormat.parse(datajam);
                         }else{
                             statusantrean=false;

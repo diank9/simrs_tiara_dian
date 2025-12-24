@@ -34,6 +34,7 @@ import bridging.SisruteRujukanKeluar;
 import laporan.DlgFrekuensiPenyakitRalan;
 import keuangan.DlgBilingRalan;
 import fungsi.WarnaTable;
+import fungsi.WarnaTableIGD;
 import fungsi.batasInput;
 import grafikanalisa.grafikperiksaperagama;
 import grafikanalisa.grafikperiksaperbulan;
@@ -289,7 +290,7 @@ public final class DlgIGD extends javax.swing.JDialog {
 
         Object[] row={"P","No.Reg","No.Rawat","Tanggal","Jam","Kd.Dokter","Dokter Dituju","Nomer RM",
             "Pasien","J.K.","Umur","Poliklinik","Penanggung Jawab","Alamat P.J.","Hubungan dg P.J.",
-            "Biaya Regristrasi","Status","Jenis Bayar","Stts Rawat","Kd PJ","Status Bayar"};
+            "Biaya Regristrasi","Status","Jenis Bayar","Stts Rawat","Kd PJ","Status Bayar","SPRI"};
         tabMode=new DefaultTableModel(null,row){
              @Override public boolean isCellEditable(int rowIndex, int colIndex){
                 boolean a = false;
@@ -304,7 +305,7 @@ public final class DlgIGD extends javax.swing.JDialog {
                  java.lang.Object.class, java.lang.Object.class, java.lang.Object.class, java.lang.Object.class, 
                  java.lang.Object.class, java.lang.Object.class, java.lang.Object.class, java.lang.Object.class, 
                  java.lang.Object.class, java.lang.Object.class, java.lang.Object.class, java.lang.Object.class, 
-                 java.lang.Object.class
+                 java.lang.Object.class, java.lang.Object.class
              };
              @Override
              public Class getColumnClass(int columnIndex) {
@@ -316,7 +317,7 @@ public final class DlgIGD extends javax.swing.JDialog {
         tbPetugas.setPreferredScrollableViewportSize(new Dimension(800,800));
         tbPetugas.setAutoResizeMode(JTable.AUTO_RESIZE_OFF);
 
-        for (i = 0; i < 21; i++) {
+        for (i = 0; i < 22; i++) {
             TableColumn column = tbPetugas.getColumnModel().getColumn(i);
             if(i==0){
                 column.setPreferredWidth(20);
@@ -361,9 +362,11 @@ public final class DlgIGD extends javax.swing.JDialog {
                 column.setMaxWidth(0);
             }else if(i==20){
                 column.setPreferredWidth(70);
+            }else if(i==21){
+                column.setPreferredWidth(70);
             }
         }
-        tbPetugas.setDefaultRenderer(Object.class, new WarnaTable());
+        tbPetugas.setDefaultRenderer(Object.class, new WarnaTableIGD());
 
         TNoReg.setDocument(new batasInput((byte)8).getKata(TNoReg));
         TNoRw.setDocument(new batasInput((byte)17).getKata(TNoRw));
@@ -12219,18 +12222,38 @@ private void MnLaporanRekapKunjunganBulananPoliActionPerformed(java.awt.event.Ac
                 @Override
                 protected Void doInBackground() {
                     try{  
-                        ps=koneksi.prepareStatement("select reg_periksa.no_reg,reg_periksa.no_rawat,reg_periksa.tgl_registrasi,reg_periksa.jam_reg,"+
-                               "reg_periksa.kd_dokter,dokter.nm_dokter,reg_periksa.no_rkm_medis,pasien.nm_pasien,pasien.jk,concat(reg_periksa.umurdaftar,' ',reg_periksa.sttsumur)as umur,poliklinik.nm_poli,"+
-                               "reg_periksa.p_jawab,reg_periksa.almt_pj,reg_periksa.hubunganpj,reg_periksa.biaya_reg,reg_periksa.stts_daftar,penjab.png_jawab,reg_periksa.stts,reg_periksa.kd_pj,reg_periksa.status_bayar "+
-                               "from reg_periksa inner join dokter inner join pasien inner join poliklinik inner join penjab "+
-                               "on reg_periksa.kd_dokter=dokter.kd_dokter and reg_periksa.no_rkm_medis=pasien.no_rkm_medis "+
-                               "and reg_periksa.kd_pj=penjab.kd_pj and reg_periksa.kd_poli=poliklinik.kd_poli  where  "+
-                               "poliklinik.kd_poli='IGDK' and reg_periksa.tgl_registrasi between ? and ? "+
-                               (TCari.getText().trim().equals("")?"":"and (reg_periksa.no_reg like ? or reg_periksa.no_rawat like ? or reg_periksa.tgl_registrasi like ? or "+
-                               "reg_periksa.kd_dokter like ? or dokter.nm_dokter like ? or reg_periksa.no_rkm_medis like ? or "+
-                               "reg_periksa.stts_daftar like ? or pasien.nm_pasien like ? or poliklinik.nm_poli like ? or "+
-                               "reg_periksa.p_jawab like ? or reg_periksa.almt_pj like ? or reg_periksa.hubunganpj like ? or "+
-                               "penjab.png_jawab like ?) ")+terbitsep+" order by reg_periksa.no_rawat "); 
+                        ps = koneksi.prepareStatement(
+                            "SELECT reg_periksa.no_reg,reg_periksa.no_rawat,reg_periksa.tgl_registrasi,reg_periksa.jam_reg, " +
+                            "reg_periksa.kd_dokter,dokter.nm_dokter,reg_periksa.no_rkm_medis,pasien.nm_pasien,pasien.jk, " +
+                            "CONCAT(reg_periksa.umurdaftar,' ',reg_periksa.sttsumur) AS umur,poliklinik.nm_poli, " +
+                            "reg_periksa.p_jawab,reg_periksa.almt_pj,reg_periksa.hubunganpj,reg_periksa.biaya_reg, " +
+                            "reg_periksa.stts_daftar,penjab.png_jawab,reg_periksa.stts,reg_periksa.kd_pj, " +
+                            "reg_periksa.status_bayar, " +
+                            "CASE WHEN permintaan_ranap.no_rawat IS NOT NULL THEN 'Ada' ELSE 'Tidak Ada' END AS permintaan_ranap " +
+    
+                            "FROM reg_periksa " +
+
+                            "INNER JOIN dokter ON reg_periksa.kd_dokter = dokter.kd_dokter " +
+                            "INNER JOIN pasien ON reg_periksa.no_rkm_medis = pasien.no_rkm_medis " +
+                            "INNER JOIN poliklinik ON reg_periksa.kd_poli = poliklinik.kd_poli " +
+                            "INNER JOIN penjab ON reg_periksa.kd_pj = penjab.kd_pj " +
+
+                            "LEFT JOIN permintaan_ranap ON permintaan_ranap.no_rawat = reg_periksa.no_rawat " +
+
+                            "WHERE poliklinik.kd_poli='IGDK' " +
+                            "AND reg_periksa.tgl_registrasi BETWEEN ? AND ? " +
+
+                            (TCari.getText().trim().equals("") 
+                            ? "" 
+                            : "AND (reg_periksa.no_reg LIKE ? OR reg_periksa.no_rawat LIKE ? OR reg_periksa.tgl_registrasi LIKE ? OR " +
+                            "reg_periksa.kd_dokter LIKE ? OR dokter.nm_dokter LIKE ? OR reg_periksa.no_rkm_medis LIKE ? OR " +
+                            "reg_periksa.stts_daftar LIKE ? OR pasien.nm_pasien LIKE ? OR poliklinik.nm_poli LIKE ? OR " +
+                            "reg_periksa.p_jawab LIKE ? OR reg_periksa.almt_pj LIKE ? OR reg_periksa.hubunganpj LIKE ? OR " +
+                            "penjab.png_jawab LIKE ?) "
+                            ) +
+                                terbitsep +
+                            " ORDER BY reg_periksa.no_rawat"
+                        );
                         try {
                             ps.setString(1,Valid.SetTgl(DTPCari1.getSelectedItem()+""));
                             ps.setString(2,Valid.SetTgl(DTPCari2.getSelectedItem()+""));
@@ -12257,7 +12280,7 @@ private void MnLaporanRekapKunjunganBulananPoliActionPerformed(java.awt.event.Ac
                                     rs.getString(5),rs.getString(6),rs.getString(7),rs.getString(8),rs.getString(9),
                                     rs.getString(10),rs.getString(11),rs.getString(12),rs.getString(13),rs.getString(14),
                                     Valid.SetAngka(rs.getDouble(15)),rs.getString(16),rs.getString(17),rs.getString(18),
-                                    rs.getString("kd_pj"),rs.getString("status_bayar")
+                                    rs.getString("kd_pj"),rs.getString("status_bayar"),rs.getString("permintaan_ranap")
                                 };
                                 i++;
                                 SwingUtilities.invokeLater(() -> tabMode.addRow(row));

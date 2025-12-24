@@ -10372,21 +10372,43 @@ private void MnLaporanRekapKunjunganBulananPoliActionPerformed(java.awt.event.Ac
 
     private void MnBatalActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_MnBatalActionPerformed
         if(TNoRw.getText().trim().equals("")){
-            Valid.textKosong(TNoRw,"No.Rawat");
+        Valid.textKosong(TNoRw,"No.Rawat");
+    }else{
+        // Validasi pasien sudah masuk kamar inap
+        if(Sequel.cariInteger(
+                "select count(kamar_inap.no_rawat) from kamar_inap where kamar_inap.no_rawat=?", 
+                TNoRw.getText()) > 0){
+            
+            JOptionPane.showMessageDialog(null,
+                    "Maaf, Pasien sudah masuk Kamar Inap. Gunakan billing Ranap..!!!");
+            
         }else{
-            if(Sequel.cariInteger("select count(kamar_inap.no_rawat) from kamar_inap where kamar_inap.no_rawat=?",TNoRw.getText())>0){
-                JOptionPane.showMessageDialog(null,"Maaf, Pasien sudah masuk Kamar Inap. Gunakan billing Ranap..!!!");
-            }else {
-                if(Sequel.cariRegistrasi(TNoRw.getText())>0){
-                    JOptionPane.showMessageDialog(rootPane,"Data billing sudah terverifikasi..!!");
-                }else{
-                    Valid.editTable(tabMode,"reg_periksa","no_rawat",TNoRw,"stts='Batal',biaya_reg='0'");
-                    if(tbPetugas.getSelectedRow()>-1){
-                        tabMode.setValueAt("Batal",tbPetugas.getSelectedRow(),19);
-                    }
+            
+            // Validasi sudah ada pemeriksaan ralan
+            if(Sequel.cariInteger(
+                    "select count(pemeriksaan_ralan.no_rawat) from pemeriksaan_ralan where pemeriksaan_ralan.no_rawat=?", 
+                    TNoRw.getText()) > 0){
+                
+                JOptionPane.showMessageDialog(rootPane,
+                        "Pasien sudah diperiksa. Tidak bisa dibatalkan..!!");
+            
+            }else if(Sequel.cariRegistrasi(TNoRw.getText()) > 0){
+                
+                // Validasi billing sudah terverifikasi
+                JOptionPane.showMessageDialog(rootPane,
+                        "Data billing sudah terverifikasi..!!");
+            
+            }else{
+                // Proses pembatalan
+                Valid.editTable(tabMode,"reg_periksa","no_rawat",TNoRw,
+                        "stts='Batal',biaya_reg='0'");
+                
+                if(tbPetugas.getSelectedRow() > -1){
+                    tabMode.setValueAt("Batal",tbPetugas.getSelectedRow(),19);
                 }
             }
         }
+    }
     }//GEN-LAST:event_MnBatalActionPerformed
 
     private void MnDirujukActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_MnDirujukActionPerformed
@@ -16473,7 +16495,7 @@ private void MnLaporanRekapKunjunganBulananPoliActionPerformed(java.awt.event.Ac
                         if(CrPoli.getText().trim().equals("")&&CrDokter.getText().equals("")&&TCari.equals("")){
                             ps=koneksi.prepareStatement("select reg_periksa.no_reg,reg_periksa.no_rawat,reg_periksa.tgl_registrasi,reg_periksa.jam_reg,"+
                                 "reg_periksa.kd_dokter,dokter.nm_dokter,reg_periksa.no_rkm_medis,pasien.nm_pasien,pasien.jk,concat(reg_periksa.umurdaftar,' ',reg_periksa.sttsumur)as umur,poliklinik.nm_poli,"+
-                                "reg_periksa.p_jawab,reg_periksa.almt_pj,reg_periksa.hubunganpj,reg_periksa.biaya_reg,reg_periksa.stts_daftar,penjab.png_jawab,pasien.no_tlp,reg_periksa.stts,reg_periksa.status_poli, "+
+                                "reg_periksa.p_jawab,reg_periksa.almt_pj,reg_periksa.hubunganpj,reg_periksa.biaya_reg,reg_paferiksa.stts_daftar,penjab.png_jawab,pasien.no_tlp,reg_periksa.stts,reg_periksa.status_poli, "+
                                 "reg_periksa.kd_poli,reg_periksa.kd_pj,reg_periksa.status_bayar from reg_periksa inner join dokter on reg_periksa.kd_dokter=dokter.kd_dokter inner join pasien on reg_periksa.no_rkm_medis=pasien.no_rkm_medis "+
                                 "inner join poliklinik on reg_periksa.kd_poli=poliklinik.kd_poli inner join penjab on reg_periksa.kd_pj=penjab.kd_pj where "+
                                 "poliklinik.kd_poli<>'IGDK' and reg_periksa.tgl_registrasi between ? and ? "+terbitsep+" order by "+order); 

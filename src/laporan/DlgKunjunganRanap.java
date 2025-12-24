@@ -67,7 +67,7 @@ public final class DlgKunjunganRanap extends javax.swing.JDialog {
         initComponents();
         this.setLocation(8,1);
         setSize(885,674);
-        tabMode=new DefaultTableModel(null,new String[]{"No.","Lama","Baru","Nama Pasien","L","P","Alamat","Kode","Diagnosa","Ruang","Stts.Pulang","Tgl.Masuk","DPJP","Cara Bayar","SEP BPJS","LOS"}){
+        tabMode=new DefaultTableModel(null,new String[]{"No.","Lama","Baru","Nama Pasien","L","P","Alamat","Kode","Diagnosa","Ruang","Stts.Pulang","Tgl.Masuk","DPJP","Cara Bayar","SEP BPJS","LOS","Status Kunjungan"}){
               @Override public boolean isCellEditable(int rowIndex, int colIndex){return false;}
         };
         tbBangsal.setModel(tabMode);
@@ -75,7 +75,7 @@ public final class DlgKunjunganRanap extends javax.swing.JDialog {
         tbBangsal.setPreferredScrollableViewportSize(new Dimension(500,500));
         tbBangsal.setAutoResizeMode(JTable.AUTO_RESIZE_OFF);
 
-        for (i = 0; i < 16; i++) {
+        for (i = 0; i < 17; i++) {
             TableColumn column = tbBangsal.getColumnModel().getColumn(i);
             if(i==0){
                 column.setPreferredWidth(35);
@@ -109,11 +109,13 @@ public final class DlgKunjunganRanap extends javax.swing.JDialog {
                 column.setPreferredWidth(75);
             }else if(i==15){
                 column.setPreferredWidth(75);
+            }else if(i==16){
+                column.setPreferredWidth(75);
             }
         }
         tbBangsal.setDefaultRenderer(Object.class, new WarnaTable());
         
-        tabMode2=new DefaultTableModel(null,new String[]{"No.","Lama","Baru","Nama Pasien","L","P","Alamat","Kode","Diagnosa","Ruang","Stts.Pulang","Tgl.Pulang","DPJP","Cara Bayar","SEP BPJS","LOS"}){
+        tabMode2=new DefaultTableModel(null,new String[]{"No.","Lama","Baru","Nama Pasien","L","P","Alamat","Kode","Diagnosa","Ruang","Stts.Pulang","Tgl.Pulang","DPJP","Cara Bayar","SEP BPJS","LOS","Status Kunjungan"}){
               @Override public boolean isCellEditable(int rowIndex, int colIndex){return false;}
         };
         tbBangsal2.setModel(tabMode2);
@@ -121,7 +123,7 @@ public final class DlgKunjunganRanap extends javax.swing.JDialog {
         tbBangsal2.setPreferredScrollableViewportSize(new Dimension(500,500));
         tbBangsal2.setAutoResizeMode(JTable.AUTO_RESIZE_OFF);
 
-        for (i = 0; i < 16; i++) {
+        for (i = 0; i < 17; i++) {
             TableColumn column = tbBangsal2.getColumnModel().getColumn(i);
             if(i==0){
                 column.setPreferredWidth(35);
@@ -154,6 +156,8 @@ public final class DlgKunjunganRanap extends javax.swing.JDialog {
             }else if(i==14){
                 column.setPreferredWidth(75);
             }else if(i==15){
+                column.setPreferredWidth(75);
+            }else if(i==16){
                 column.setPreferredWidth(75);
             }
         }
@@ -1292,7 +1296,7 @@ private void BtnCariKeyPressed(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_B
             Valid.tabelKosong(tabMode);   
             ps=koneksi.prepareStatement(
                     "select reg_periksa.no_rawat,reg_periksa.tgl_registrasi,reg_periksa.no_rkm_medis,pasien.nm_pasien,pasien.alamat,pasien.jk,concat(reg_periksa.umurdaftar,' ',reg_periksa.sttsumur) as umur,pasien.tgl_daftar,reg_periksa.stts_daftar,"+
-                    "kamar_inap.kd_kamar,bangsal.nm_bangsal,concat(pasien.alamat,', ',kelurahan.nm_kel,', ',kecamatan.nm_kec,', ',kabupaten.nm_kab)as almt_pj,kamar_inap.stts_pulang,kamar_inap.tgl_masuk,dokter.nm_dokter,penjab.png_jawab,COALESCE (bridging_sep.no_sep,'-')as no_sep,MAX(kamar_inap.lama) as lama_dirawat "+
+                    "kamar_inap.kd_kamar,bangsal.nm_bangsal,concat(pasien.alamat,', ',kelurahan.nm_kel,', ',kecamatan.nm_kec,', ',kabupaten.nm_kab)as almt_pj,kamar_inap.stts_pulang,kamar_inap.tgl_masuk,dokter.nm_dokter,penjab.png_jawab,COALESCE (bridging_sep.no_sep,'-')as no_sep,reg_periksa.stts_daftar,MAX(kamar_inap.lama) as lama_dirawat "+
                     "from reg_periksa inner join pasien on reg_periksa.no_rkm_medis=pasien.no_rkm_medis inner join kamar_inap on reg_periksa.no_rawat=kamar_inap.no_rawat "+
                     "inner join kamar on kamar_inap.kd_kamar=kamar.kd_kamar inner join bangsal on kamar.kd_bangsal=bangsal.kd_bangsal inner join dokter on reg_periksa.kd_dokter=dokter.kd_dokter "+
                     "inner join penjab on reg_periksa.kd_pj=penjab.kd_pj inner join kabupaten on pasien.kd_kab=kabupaten.kd_kab inner join kecamatan on pasien.kd_kec=kecamatan.kd_kec inner join kelurahan on pasien.kd_kel=kelurahan.kd_kel LEFT JOIN bridging_sep ON bridging_sep.no_rawat=reg_periksa.no_rawat and jnspelayanan=1  "+
@@ -1435,7 +1439,7 @@ private void BtnCariKeyPressed(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_B
                         }
                         
                         tabMode.addRow(new Object[]{
-                            i,setlama,setbaru,rs.getString("nm_pasien"),umurlk,umurpr,rs.getString("almt_pj"),kddiagnosa,diagnosa,rs.getString("kd_kamar")+" "+rs.getString("nm_bangsal"),rs.getString("stts_pulang"),rs.getString("tgl_masuk"),dokterdpjp,rs.getString("png_jawab"),rs.getString("no_sep"),rs.getString("lama_dirawat")
+                            i,setlama,setbaru,rs.getString("nm_pasien"),umurlk,umurpr,rs.getString("almt_pj"),kddiagnosa,diagnosa,rs.getString("kd_kamar")+" "+rs.getString("nm_bangsal"),rs.getString("stts_pulang"),rs.getString("tgl_masuk"),dokterdpjp,rs.getString("png_jawab"),rs.getString("no_sep"),rs.getString("lama_dirawat"),rs.getString("stts_daftar")
                         });                
                         i++;
                     }
@@ -1468,7 +1472,7 @@ private void BtnCariKeyPressed(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_B
             Valid.tabelKosong(tabMode2);   
             ps=koneksi.prepareStatement(
                     "select reg_periksa.no_rawat,reg_periksa.tgl_registrasi,reg_periksa.no_rkm_medis,pasien.nm_pasien,pasien.alamat,pasien.jk,concat(reg_periksa.umurdaftar,' ',reg_periksa.sttsumur) as umur,pasien.tgl_daftar,reg_periksa.stts_daftar,"+
-                    "kamar_inap.kd_kamar,bangsal.nm_bangsal,concat(pasien.alamat,', ',kelurahan.nm_kel,', ',kecamatan.nm_kec,', ',kabupaten.nm_kab)as almt_pj,kamar_inap.stts_pulang,kamar_inap.tgl_keluar,dokter.nm_dokter,penjab.png_jawab,COALESCE (bridging_sep.no_sep,'-')as no_sep,MAX(kamar_inap.lama) as lama_dirawat "+
+                    "kamar_inap.kd_kamar,bangsal.nm_bangsal,concat(pasien.alamat,', ',kelurahan.nm_kel,', ',kecamatan.nm_kec,', ',kabupaten.nm_kab)as almt_pj,kamar_inap.stts_pulang,kamar_inap.tgl_keluar,dokter.nm_dokter,penjab.png_jawab,COALESCE (bridging_sep.no_sep,'-')as no_sep,reg_periksa.stts_daftar,MAX(kamar_inap.lama) as lama_dirawat "+
                     "from reg_periksa inner join pasien on reg_periksa.no_rkm_medis=pasien.no_rkm_medis inner join kamar_inap on reg_periksa.no_rawat=kamar_inap.no_rawat "+
                     "inner join kamar on kamar_inap.kd_kamar=kamar.kd_kamar inner join bangsal on kamar.kd_bangsal=bangsal.kd_bangsal inner join dokter on reg_periksa.kd_dokter=dokter.kd_dokter "+
                     "inner join penjab on reg_periksa.kd_pj=penjab.kd_pj inner join kabupaten on pasien.kd_kab=kabupaten.kd_kab inner join kecamatan on pasien.kd_kec=kecamatan.kd_kec inner join kelurahan on pasien.kd_kel=kelurahan.kd_kel LEFT JOIN bridging_sep ON bridging_sep.no_rawat=reg_periksa.no_rawat and jnspelayanan=1 "+
@@ -1612,7 +1616,7 @@ while(rs.next()){
                             }
                         }
                         tabMode2.addRow(new Object[]{
-                            i,setlama,setbaru,rs.getString("nm_pasien"),umurlk,umurpr,rs.getString("almt_pj"),kddiagnosa,diagnosa,rs.getString("kd_kamar")+" "+rs.getString("nm_bangsal"),rs.getString("stts_pulang"),rs.getString("tgl_keluar"),dokterdpjp,rs.getString("png_jawab"),rs.getString("no_sep"),rs.getString("lama_dirawat")
+                            i,setlama,setbaru,rs.getString("nm_pasien"),umurlk,umurpr,rs.getString("almt_pj"),kddiagnosa,diagnosa,rs.getString("kd_kamar")+" "+rs.getString("nm_bangsal"),rs.getString("stts_pulang"),rs.getString("tgl_keluar"),dokterdpjp,rs.getString("png_jawab"),rs.getString("no_sep"),rs.getString("lama_dirawat"),rs.getString("stts_daftar")
                         });                
                         i++;
                     }

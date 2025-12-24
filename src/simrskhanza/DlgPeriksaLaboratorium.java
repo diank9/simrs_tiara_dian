@@ -134,7 +134,7 @@ public final class DlgPeriksaLaboratorium extends javax.swing.JDialog {
             }else if(i==2){
                 column.setPreferredWidth(130);
             }else if(i==3){
-                column.setPreferredWidth(70);
+                column.setPreferredWidth(130);
             }else if(i==4){
                 column.setPreferredWidth(130);
             }else if(i==5){
